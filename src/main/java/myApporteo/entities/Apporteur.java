@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "Apporteur")
-public class Apporteur extends users{
+public class Apporteur extends User{
 
     private  String type;
     @Column(name = "datedenaissance")

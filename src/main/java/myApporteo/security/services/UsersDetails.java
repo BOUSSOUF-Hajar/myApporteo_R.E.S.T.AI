@@ -1,7 +1,7 @@
 package myApporteo.security.services;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import myApporteo.entities.users;
+import myApporteo.entities.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,7 +33,7 @@ public class UsersDetails implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UsersDetails build(users user) {
+    public static UsersDetails build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());

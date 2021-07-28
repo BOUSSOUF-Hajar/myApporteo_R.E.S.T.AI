@@ -1,6 +1,6 @@
 package myApporteo.security.services;
 
-import myApporteo.entities.users;
+import myApporteo.entities.User;
 import myApporteo.repositories.UsersRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UsersDetails loadUserByUsername(String username) throws UsernameNotFoundException{
-        users user = userRepository.findByUsername(username)
+    	User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new Exception("User Not Found with username: " + username));
 
         return UsersDetails.build(user);

@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "Partenaire")
-public class Partenaire extends users{
+public class Partenaire extends User{
 
     private String nomAgence;
 

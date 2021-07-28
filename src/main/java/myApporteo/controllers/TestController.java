@@ -1,5 +1,6 @@
 package myApporteo.controllers;
 
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,16 +17,23 @@ public class TestController {
     }
 
     @GetMapping("/user")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('APPORTEUR') or hasRole('ADMIN') or hasRole('PARTENAIRE')")
+    @PreAuthorize("hasRole('USER') or hasRole('APPORTEUR') or hasRole('ADMIN') or hasRole('PARTENAIRE')")
     public String userAccess() {
         return "User Content.";
     }
 
-    @GetMapping("/APPORTEUR")
-    @PreAuthorize("hasRole('APPORTEUR')")
-    public String moderatorAccess() {
+    @GetMapping("/apporteur")
+  @PreAuthorize("hasRole('APPORTEUR')")
+  
+    public String apporteurrAccess() {
         return "APPORTEUR Board.";
     }
+    @GetMapping("/partenaire")
+    @PreAuthorize("hasRole('PARTENAIRE')")
+    
+      public String partenaireAccess() {
+          return "APPORTEUR Board.";
+      }
 
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")

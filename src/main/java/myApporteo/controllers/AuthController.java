@@ -1,5 +1,6 @@
 package myApporteo.controllers;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +37,10 @@ import myApporteo.security.services.UsersDetails;
 public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
-
+    @Autowired
+    ApporteurRepository apporteurRepository;
+    @Autowired
+    PartenaireRepository partenaireRepository;
     @Autowired
     UsersRepository userRepository;
 
@@ -82,11 +86,13 @@ public class AuthController {
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
-
         // Create new user's account
-        users user = new users(signUpRequest.getUsername(),
+        User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
+                encoder.encode(signUpRequest.getPassword()),
+                signUpRequest.getAdresse(),signUpRequest.getTelephone(),signUpRequest.getNomAgence(),signUpRequest.getNomSociete(),signUpRequest.getSiret()
+                ,signUpRequest.getNumCarteT(),signUpRequest.getCCI(),signUpRequest.getVille(),signUpRequest.getCodePostal(),signUpRequest.getAffairesPrtenaire(),signUpRequest.getType(),signUpRequest.getDateDeNaissance()
+                ,signUpRequest.getAffairesApporteur());
 
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
@@ -102,6 +108,7 @@ public class AuthController {
                     case "admin":
                         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        
                         roles.add(adminRole);
 
                         break;

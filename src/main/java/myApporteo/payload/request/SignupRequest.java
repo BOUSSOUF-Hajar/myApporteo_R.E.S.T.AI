@@ -1,14 +1,18 @@
 package myApporteo.payload.request;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.OneToMany;
 import javax.validation.constraints.*;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.*;
-import myApporteo.entities.affaire;
+import myApporteo.entities.Affaire;
+import myApporteo.entities.Affaire;
 @Data
 
 public class SignupRequest {
@@ -35,9 +39,10 @@ public class SignupRequest {
     @NotBlank
     @Size(min = 6, max = 40)
     private String password;
-    private Instant dateDeNaissance;
-    private List<affaire> affairesApporteur;
-    private List<affaire> affairesPrtenaire;
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private LocalDate dateDeNaissance;
+    private List<Affaire> affairesApporteur;
+    private List<Affaire> affairesPrtenaire;
     private String nomAgence;
 
     private String nomSociete;
@@ -56,9 +61,9 @@ public class SignupRequest {
     
     public SignupRequest(@NotBlank @Size(min = 3, max = 20) String username,
 			@NotBlank @Size(max = 50) @Email String email, String adresse, String telephone, String type,
-			Set<String> role, @NotBlank @Size(min = 6, max = 40) String password, Instant dateDeNaissance,
-			List<affaire> affairesApporteur, List<affaire> affairesPrtenaire, String nomAgence, String nomSociete,
-			String siret, Long numCarteT, String cCI, String ville, String codePostal) {
+			Set<String> role, @NotBlank @Size(min = 6, max = 40) String password, LocalDate dateDeNaissance,
+			List<Affaire> affairesApporteur, List<Affaire> affairesPrtenaire, String nomAgence, String nomSociete,
+			String siret, Long numCarteT, String CCI, String ville, String codePostal) {
 		super();
 		this.username = username;
 		this.email = email;
@@ -67,14 +72,14 @@ public class SignupRequest {
 		this.type = type;
 		this.role = role;
 		this.password = password;
-		this.dateDeNaissance = dateDeNaissance;
+		this.dateDeNaissance =dateDeNaissance;
 		this.affairesApporteur = affairesApporteur;
 		this.affairesPrtenaire = affairesPrtenaire;
 		this.nomAgence = nomAgence;
 		this.nomSociete = nomSociete;
-		Siret = siret;
+		this.Siret = siret;
 		this.numCarteT = numCarteT;
-		CCI = cCI;
+		this.CCI = CCI;
 		this.ville = ville;
 		this.codePostal = codePostal;
 	}

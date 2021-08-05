@@ -10,8 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import myApporteo.entities.Apporteur;
-import myApporteo.entities.Partenaire;
 
 @Data
 @AllArgsConstructor
@@ -19,7 +17,14 @@ import myApporteo.entities.Partenaire;
 @ToString
 public class AffaireDto {
 		private Long id;
-		private Apporteur apporteur;
+		private String type;
+		private String NomPrenom;
+		private String adresse;
+		private String ville;
+		private String codePostal;
+		private String emailProp;
+		private String telephoneProp ;
+		private UserDto apporteur;
 	   
-	    private Partenaire partenaire;
+	    private UserDto partenaire;
 }

@@ -53,7 +53,20 @@ public class UserServiceImpl implements UserService  {
 	}
 
 	@Override
-	public UserDto findByEmail(String email) {
+	 public UserDto findByUsername(String username) {
+        ModelMapper modelMapper = new ModelMapper();
+       
+        User user = usersRepository.findByUsername(username).orElse(null);
+        UserDto userDto = new UserDto();
+        
+            userDto= modelMapper.map(user, UserDto.class);
+           
+        
+        return userDto;
+    }
+
+	@Override
+	public String findByEmail(String email) {
 		// TODO Auto-generated method stub
 		return null;
 	}

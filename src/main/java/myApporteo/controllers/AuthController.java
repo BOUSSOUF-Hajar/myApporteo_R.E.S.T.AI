@@ -1,6 +1,7 @@
 package myApporteo.controllers;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import myApporteo.Dto.RoleDto;
+import myApporteo.Dto.UserDto;
 import myApporteo.entities.*;
 
 import myApporteo.payload.request.LoginRequest;
@@ -30,6 +33,7 @@ import myApporteo.payload.response.MessageResponse;
 import myApporteo.repositories.*;
 import myApporteo.security.jwt.JwtUtils;
 import myApporteo.security.services.UsersDetails;
+import myApporteo.services.UserService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -37,36 +41,33 @@ import myApporteo.security.services.UsersDetails;
 public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
-    @Autowired
-    ApporteurRepository apporteurRepository;
-    @Autowired
-    PartenaireRepository partenaireRepository;
+    
     @Autowired
     UsersRepository userRepository;
 
     @Autowired
     RoleRepository roleRepository;
-
+    @Autowired
+    UserService userService;
     @Autowired
     PasswordEncoder encoder;
-
+   
     @Autowired
     JwtUtils jwtUtils;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    	User user =  userRepository.findByEmail(loginRequest.getEmail()).orElse(null);
+    	 Authentication authentication = authenticationManager.authenticate(
+                 new UsernamePasswordAuthenticationToken(user.getUsername(), loginRequest.getPassword()));
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+         SecurityContextHolder.getContext().setAuthentication(authentication);
+         String jwt = jwtUtils.generateJwtToken(authentication);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
-        UsersDetails userDetails = (UsersDetails) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
-
+         UsersDetails userDetails = (UsersDetails) authentication.getPrincipal();
+         List<String> roles = userDetails.getAuthorities().stream()
+                 .map(item -> item.getAuthority())
+                 .collect(Collectors.toList());
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
@@ -87,6 +88,7 @@ public class AuthController {
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
         // Create new user's account
+        
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()),
@@ -95,6 +97,7 @@ public class AuthController {
                 ,signUpRequest.getAffairesApporteur());
 
         Set<String> strRoles = signUpRequest.getRole();
+        System.out.println(user);
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {

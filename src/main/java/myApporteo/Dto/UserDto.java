@@ -2,7 +2,7 @@ package myApporteo.Dto;
 
 import myApporteo.entities.Role;
 import  myApporteo.entities.User;
-import myApporteo.entities.affaire;
+import myApporteo.entities.Affaire;
 
 import java.io.Serializable;
 import java.time.Instant;

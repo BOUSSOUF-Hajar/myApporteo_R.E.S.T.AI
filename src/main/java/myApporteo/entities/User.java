@@ -3,6 +3,7 @@ package myApporteo.entities;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -57,7 +58,7 @@ public class User extends AbstractEntity{
     private String ville;
 
     private String codePostal;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "partenaire")
     private List<Affaire> affairesPartenaire;
 
@@ -65,7 +66,7 @@ public class User extends AbstractEntity{
     @Column(name = "datedenaissance")
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate dateDeNaissance;
-    
+    @JsonIgnore
     @OneToMany(mappedBy = "apporteur")
     private List<Affaire> affairesApporteur;
     

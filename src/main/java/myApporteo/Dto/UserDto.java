@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,7 +36,9 @@ public class UserDto  implements Serializable {
   private  String type;
   private String password;
   private Instant dateDeNaissance;
+  @JsonIgnore
   private List<AffaireDto> affairesApporteur;
+  @JsonIgnore
   private List<AffaireDto> affairesPrtenaire;
   private String nomAgence;
 

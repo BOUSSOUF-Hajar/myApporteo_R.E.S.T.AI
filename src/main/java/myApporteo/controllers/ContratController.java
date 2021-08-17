@@ -12,17 +12,20 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import myApporteo.entities.Contrat;
 import myApporteo.payload.response.*;
+import myApporteo.payload.response.ResponseFile;
 
 import myApporteo.services.ContratService;
-
-@Controller
-@CrossOrigin("/")
+@CrossOrigin(origins = "*", maxAge = 3600)
+@RestController
+@RequestMapping("/api/test")
 public class ContratController {
 	@Autowired
 	  private ContratService storageService;
@@ -46,7 +49,7 @@ public class ContratController {
 	    List<ResponseFile> files = storageService.getAllFiles().map(dbFile -> {
 	      String fileDownloadUri = ServletUriComponentsBuilder
 	          .fromCurrentContextPath()
-	          .path("/contrats/")
+	          .path("api/test/contrats/")
 	          .path(dbFile.getId())
 	          .toUriString();
 
@@ -59,8 +62,27 @@ public class ContratController {
 
 	    return ResponseEntity.status(HttpStatus.OK).body(files);
 	  }
+	  @GetMapping("/contrat/{id}")
+	  public ResponseEntity<ResponseFile> getOneFile(@PathVariable String id) {
+	   Contrat file = storageService.getFile(id);
+	      String fileDownloadUri = ServletUriComponentsBuilder
+	          .fromCurrentContextPath()
+	          .path("api/test/contrats/")
+	          .path(file.getId())
+	          .toUriString();
 
-	  @GetMapping("/contrats/{id}")
+	      ResponseFile resp=new ResponseFile(
+	          file.getName(),
+	          fileDownloadUri,
+	          file.getType(),
+	        file .getData().length);
+	   
+	    return ResponseEntity.status(HttpStatus.OK).body(resp);
+	  }
+
+	 
+
+	@GetMapping("/contrats/{id}")
 	  public ResponseEntity<byte[]> getFile(@PathVariable String id) {
 	    Contrat fileDB = storageService.getFile(id);
 

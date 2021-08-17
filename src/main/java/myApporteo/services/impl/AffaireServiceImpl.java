@@ -95,6 +95,7 @@ public class AffaireServiceImpl implements AffaireService {
 			affaire.setPartenaire(newAffaire.getPartenaire());
 			affaire.setTelephoneProp(newAffaire.getTelephoneProp());
 			affaire.setType(newAffaire.getType());
+			affaire.setContrat(newAffaire.getContrat());
 			affaire.setVille(newAffaire.getVille());
 			affaireRepository.save(affaire);
 			

@@ -80,7 +80,12 @@ public class AffaireController {
 	public List<AffaireDto> findAll() {
 	    return affaireService.findAll();
 	  }
-	 
+	 @GetMapping("/affaire/contrat/{id}")
+	 public String getContratId(@PathVariable long id) {
+		 Affaire affaire=affaireRepository.findById(id).orElse(null);
+		 Contrat contrat=affaire.getContrat();
+		 return contrat.getId();
+	 }
 	 
 	 
 	 @GetMapping("/apporteur_affaires")

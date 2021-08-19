@@ -1,12 +1,14 @@
 package myApporteo.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
+import java.util.Random;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import myApporteo.Dto.AffaireDto;
+import myApporteo.Dto.UserDto;
 import myApporteo.entities.Affaire;
 import myApporteo.entities.Contrat;
+import myApporteo.entities.ERole;
 import myApporteo.entities.User;
 import myApporteo.payload.response.MessageResponse;
 import myApporteo.repositories.AffaireRepository;
@@ -43,6 +47,8 @@ public class AffaireController {
 	ContratRepository contratRepository;
 	@Autowired
 	UsersRepository userRepository;
+	@Autowired 
+	UserService userService;
 	@Autowired
 	AffaireService affaireService;
 	@Autowired
@@ -80,10 +86,16 @@ public class AffaireController {
 	public List<AffaireDto> findAll() {
 	    return affaireService.findAll();
 	  }
-	 @GetMapping("/affaire/contrat/{id}")
-	 public String getContratId(@PathVariable long id) {
+	 @GetMapping("/admin/contrat/{id}")
+	 public String getAdminContratId(@PathVariable long id) {
 		 Affaire affaire=affaireRepository.findById(id).orElse(null);
-		 Contrat contrat=affaire.getContrat();
+		 Contrat contrat=affaire.getContratAdmin();
+		 return contrat.getId();
+	 }
+	 @GetMapping("/app/contrat/{id}")
+	 public String getAppContratId(@PathVariable long id) {
+		 Affaire affaire=affaireRepository.findById(id).orElse(null);
+		 Contrat contrat=affaire.getContratApp();
 		 return contrat.getId();
 	 }
 	 
@@ -98,7 +110,7 @@ public class AffaireController {
 	 
 	 
 	 
-	 @GetMapping("/partenaire_affaires}")
+	 @GetMapping("/partenaire_affaires")
 	 @PreAuthorize("hasRole('PARTENAIRE')")
 	 public List<AffaireDto> findByPartenaire() {
 		 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -111,16 +123,68 @@ public class AffaireController {
 	    affaireService.deleteAffaire(id);
 	  }
 	 @PreAuthorize("hasRole('ADMIN')")
-	 @PutMapping("/affaireAddContrat/{id}")
-	  public void addContrat(@PathVariable("id") long id, @RequestParam("file")  MultipartFile contrat) throws IOException {
+	 @PutMapping("/adminAddContrat/{id}")
+	  public void adminAddContrat(@PathVariable("id") long id, @RequestParam("file")  MultipartFile contrat) throws IOException {
 		 	Affaire affaire=affaireRepository.findById(id).orElse(null);
 		 	 String fileName = StringUtils.cleanPath(contrat.getOriginalFilename());
 			 Contrat FileDB = new Contrat(fileName, contrat.getContentType(), contrat.getBytes());
 		 	//contratRepository.save(FileDB);
-		 	affaire.setContrat(FileDB);
+		 	affaire.setContratAdmin(FileDB);
+		 	affaire.setStatut("En vente");
 		 	affaireService.updateAffaire(id,affaire);
 		 	
 		 	}
+	 @PreAuthorize("hasRole('PARTENAIRE')")
+	 @PutMapping("/confirmerVente/{id}")
+	  public void confirerVente(@PathVariable("id") long id)  {
+		 	Affaire affaire=affaireRepository.findById(id).orElse(null);
+		 	
+		 	affaire.setStatut("Vendu");
+		 	affaireService.updateAffaire(id,affaire);
+		 	
+		 	}
+	 
+	 @PreAuthorize("hasRole('APPORTEUR')")
+	 @PutMapping("/appAddContrat/{id}")
+	  public void appAddContrat(@PathVariable("id") long id, @RequestParam("file")  MultipartFile contrat) throws IOException {
+		 	Affaire affaire=affaireRepository.findById(id).orElse(null);
+		 	 String fileName = StringUtils.cleanPath(contrat.getOriginalFilename());
+			 Contrat FileDB = new Contrat(fileName, contrat.getContentType(), contrat.getBytes());
+		 	//contratRepository.save(FileDB);
+		 	affaire.setContratApp(FileDB);
+		 	affaire.setStatut("Contrat signé");
+		 	affaireService.updateAffaire(id,affaire);
+		 	
+		 	}
+	 @PutMapping("/addPartenaire")
+	 public void affecterpartenaire(@RequestBody AffaireDto affaire) {
+		 Affaire affairey=affaireRepository.getById(affaire.getId());
+		 List<UserDto> userPart=new ArrayList<UserDto>();
+		 List<UserDto> users=userService.findByVille(affairey.getVille());
+		 for(int i=0;i<users.size();i++) {
+			 if(users.get(i).getRoles().get(0).getName()==ERole.ROLE_PARTENAIRE) {
+				 userPart.add(users.get(i));
+			 }
+			
+		 }
+		 if(userPart.size()==0) {
+			 User user=userService.findByRoles(ERole.ROLE_PARTENAIRE);
+			 
+			 ModelMapper modelMapper = new ModelMapper();
+			   UserDto userDto = modelMapper.map(user, UserDto.class);
+					 userPart.add(userDto);
+				
+		 }
+		 
+		
+		 Random rand = new Random();
+		    UserDto randomElement = userPart.get(rand.nextInt(userPart.size()));
+		    System.out.println("choosen  :"+ randomElement);
+		    ModelMapper modelMapper = new ModelMapper();
+		   User user = modelMapper.map(randomElement, User.class);
+		    affairey.setPartenaire(user);
+		    affaireService.updateAffaire(affairey.getId(),affairey);
+	 }
 	 @PutMapping("/affaire/{id}")
 	  public void updateAffiare(@PathVariable("id") long id, @RequestBody Affaire newAffaire) {
 		 	affaireService.updateAffaire(id,newAffaire);

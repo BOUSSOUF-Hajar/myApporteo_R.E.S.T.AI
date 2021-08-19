@@ -25,5 +25,8 @@ public class Affaire extends AbstractEntity{
     private User partenaire;
     @JsonIgnore
     @OneToOne(cascade=CascadeType.ALL)
-     private Contrat contrat;
+     private Contrat contratApp;
+    @JsonIgnore
+    @OneToOne(cascade=CascadeType.ALL)
+     private Contrat contratAdmin;
 }

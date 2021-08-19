@@ -29,7 +29,9 @@ public class AffaireDto  implements Serializable {
 		private String emailProp;
 		private String statut;
 		@JsonIgnore
-		private Contrat contrat;
+		private Contrat contratAdmin;
+		@JsonIgnore
+		private Contrat contratApp;
 		private String telephoneProp ;
 		private UserDto apporteur;
 	   

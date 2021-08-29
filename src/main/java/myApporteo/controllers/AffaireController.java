@@ -130,11 +130,32 @@ public class AffaireController {
 			 Contrat FileDB = new Contrat(fileName, contrat.getContentType(), contrat.getBytes());
 		 	//contratRepository.save(FileDB);
 		 	affaire.setContratAdmin(FileDB);
-		 	affaire.setStatut("En vente");
+		 	
 		 	affaireService.updateAffaire(id,affaire);
 		 	
 		 	}
-	 @PreAuthorize("hasRole('PARTENAIRE')")
+	 @PutMapping("/annulerAjoutAdmin/{id}")
+	  public void annulerAjoutAdmin(@PathVariable("id") long id)  {
+		 Affaire affaire=affaireRepository.findById(id).orElse(null);
+		 	
+		 	affaire.setContratApp(null);
+		 	affaireService.updateAffaire(id,affaire);
+	 }
+	 @PutMapping("/annulerAjoutApp/{id}")
+	  public void annulerAjoutApp(@PathVariable("id") long id)  {
+		 Affaire affaire=affaireRepository.findById(id).orElse(null);
+		 	
+		 	affaire.setStatut("En attente de tratement");
+		 	affaire.setContratApp(null);
+		 	affaireService.updateAffaire(id,affaire);
+	 }
+	 @PutMapping("/annulerVente/{id}")
+	  public void annulerConfirerVente(@PathVariable("id") long id)  {
+		 Affaire affaire=affaireRepository.findById(id).orElse(null);
+		 	
+		 	affaire.setStatut("En vente");
+		 	affaireService.updateAffaire(id,affaire);
+	 }
 	 @PutMapping("/confirmerVente/{id}")
 	  public void confirerVente(@PathVariable("id") long id)  {
 		 	Affaire affaire=affaireRepository.findById(id).orElse(null);
@@ -156,6 +177,7 @@ public class AffaireController {
 		 	affaireService.updateAffaire(id,affaire);
 		 	
 		 	}
+	 
 	 @PutMapping("/addPartenaire")
 	 public void affecterpartenaire(@RequestBody AffaireDto affaire) {
 		 Affaire affairey=affaireRepository.getById(affaire.getId());
@@ -183,10 +205,22 @@ public class AffaireController {
 		    ModelMapper modelMapper = new ModelMapper();
 		   User user = modelMapper.map(randomElement, User.class);
 		    affairey.setPartenaire(user);
+		    affairey.setStatut("En vente");
 		    affaireService.updateAffaire(affairey.getId(),affairey);
 	 }
 	 @PutMapping("/affaire/{id}")
 	  public void updateAffiare(@PathVariable("id") long id, @RequestBody Affaire newAffaire) {
 		 	affaireService.updateAffaire(id,newAffaire);
 		 	}
+	 @GetMapping("/affaire/{id}")
+	  public Affaire getAffaire(@PathVariable("id") long id) {
+		 	Affaire affaire=affaireRepository.findById(id).orElse(null);
+		 	
+			  
+			   return affaire;
+		 	
+		 	}
+
+
+
 }

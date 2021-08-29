@@ -15,4 +15,5 @@ import myApporteo.entities.User;
 public interface AffaireRepository extends JpaRepository<Affaire, Long> {
 	List<Affaire> findByApporteur(User user);
 	List<Affaire> findByPartenaire(User user);
+	
 }
